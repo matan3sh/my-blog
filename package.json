@@ -19,5 +19,8 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "sass": "^1.32.13"
+  },
+  "devDependencies": {
+    "gatsby-plugin-root-import": "^2.0.6"
   }
 }
