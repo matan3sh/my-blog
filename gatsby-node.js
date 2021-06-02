@@ -46,10 +46,13 @@ exports.createResolvers = ({ createResolvers }) => {
     Query: {
       allPosts: {
         type: ['PostJson'],
-        resolve() {
-          console.log('Hitting the query!');
-
-          return [
+        args: {
+          filter: 'String',
+          limit: 'Int',
+        },
+        resolve(source, args, context, info) {
+          const { filter } = args;
+          const posts = [
             {
               id: '1',
               title: 'Hello World',
@@ -77,6 +80,12 @@ exports.createResolvers = ({ createResolvers }) => {
               },
             },
           ];
+
+          if (filter) {
+            return posts.filter((post) => post.title === filter);
+          }
+
+          return posts;
         },
       },
     },
