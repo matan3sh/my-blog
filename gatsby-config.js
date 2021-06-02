@@ -2,7 +2,10 @@ const path = require('path');
 
 module.exports = {
   siteMetadata: {
-    title: 'my-blog',
+    title: "Matan's Blog",
+    body: {
+      content: 'Just Some SEO Content',
+    },
   },
   plugins: [
     'gatsby-plugin-sass',
