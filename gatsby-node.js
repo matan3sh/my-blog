@@ -21,22 +21,11 @@ exports.createPages = async ({ actions: { createPage } }) => {
 exports.createSchemaCustomization = ({ actions }) => {
   const { createTypes } = actions;
   const typeDefs = `
-    type PostContent {
-      title: String
-      text: String
-    }
-
     type PostJson {
       id: ID
       title: String
       body: String!
-      wordCount: Int
-      isActive: Boolean
-      rating: Float
-      tags: [String!]!
-      content: PostContent
     }
-
     input TitleFilter {
       eq: String
       in: String
@@ -55,38 +44,14 @@ exports.createResolvers = ({ createResolvers }) => {
           filter: `input PostFilterInput { title: TitleFilter }`,
           limit: 'Int',
         },
-        resolve(source, { filter }, context, info) {
+        async resolve(source, { filter }, context, info) {
           const { title } = filter || {};
           const { eq } = title || {};
 
-          const posts = [
-            {
-              id: '1',
-              title: 'Hello World',
-              body: 'My Custom Text',
-              wordCount: 200,
-              isActive: true,
-              rating: 4.23,
-              tags: ['Programming', 'Development', 'React JS'],
-              content: {
-                text: 'My content text',
-                title: 'My content title',
-              },
-            },
-            {
-              id: '2',
-              title: 'Hello World2',
-              body: 'My Custom Text2',
-              wordCount: 300,
-              isActive: false,
-              rating: 2.23,
-              tags: ['Vue JS', 'Next JS', 'React JS'],
-              content: {
-                text: 'My content text2',
-                title: 'My content title2',
-              },
-            },
-          ];
+          const res = await axios.get(
+            'https://jsonplaceholder.typicode.com/posts'
+          );
+          const posts = res.data;
 
           if (eq) {
             return posts.filter((post) => post.title === eq);
@@ -97,6 +62,5 @@ exports.createResolvers = ({ createResolvers }) => {
       },
     },
   };
-
   createResolvers(resolvers);
 };
