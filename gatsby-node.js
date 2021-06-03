@@ -36,6 +36,11 @@ exports.createSchemaCustomization = ({ actions }) => {
       tags: [String!]!
       content: PostContent
     }
+
+    input TitleFilter {
+      eq: String
+      in: String
+    }
   `;
 
   createTypes(typeDefs);
@@ -47,11 +52,13 @@ exports.createResolvers = ({ createResolvers }) => {
       allPosts: {
         type: ['PostJson'],
         args: {
-          filter: 'String',
+          filter: `input PostFilterInput { title: TitleFilter }`,
           limit: 'Int',
         },
-        resolve(source, args, context, info) {
-          const { filter } = args;
+        resolve(source, { filter }, context, info) {
+          const { title } = filter || {};
+          const { eq } = title || {};
+
           const posts = [
             {
               id: '1',
@@ -81,8 +88,8 @@ exports.createResolvers = ({ createResolvers }) => {
             },
           ];
 
-          if (filter) {
-            return posts.filter((post) => post.title === filter);
+          if (eq) {
+            return posts.filter((post) => post.title === eq);
           }
 
           return posts;
