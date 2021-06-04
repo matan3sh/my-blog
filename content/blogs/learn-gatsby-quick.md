@@ -1,3 +1,10 @@
+---
+title: Learn Gatsby Fast
+subtitle: Learn Gatsy now, its super!
+date: 2021-05-10
+myOtherField: asjhdbahdahjdajhdjhabd
+---
+
 # h1 Heading 8-)
 
 ## h2 Heading
