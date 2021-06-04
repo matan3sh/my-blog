@@ -1,12 +1,36 @@
 import React from 'react';
+import { graphql } from 'gatsby';
+
 import { Layout } from 'components/layout';
 
-const Blogs = () => {
+const Blogs = ({ data }) => {
   return (
     <Layout>
-      <h2>I am Blogs Page</h2>
+      <ul>
+        {data.allFile.nodes.map((node) => (
+          <li key={node.relativePath}>
+            <p>{node.relativePath}</p>
+            <p>{node.extension}</p>
+            <p>{node.birthTime}</p>
+            <p>{node.prettySize}</p>
+          </li>
+        ))}
+      </ul>
     </Layout>
   );
 };
+
+export const query = graphql`
+  query {
+    allFile {
+      nodes {
+        relativePath
+        prettySize
+        extension
+        birthTime(fromNow: true)
+      }
+    }
+  }
+`;
 
 export default Blogs;
