@@ -18,49 +18,27 @@ exports.createPages = async ({ actions: { createPage } }) => {
   });
 };
 
-exports.createSchemaCustomization = ({ actions }) => {
-  const { createTypes } = actions;
-  const typeDefs = `
-    type PostJson {
-      id: ID
-      title: String
-      body: String!
-    }
-    input TitleFilter {
-      eq: String
-      in: String
-    }
-  `;
+exports.sourceNodes = async ({
+  actions,
+  createNodeId,
+  createContentDigest,
+}) => {
+  const res = await axios.get('https://jsonplaceholder.typicode.com/posts');
+  const posts = res.data;
 
-  createTypes(typeDefs);
-};
-
-exports.createResolvers = ({ createResolvers }) => {
-  const resolvers = {
-    Query: {
-      allPosts: {
-        type: ['PostJson'],
-        args: {
-          filter: `input PostFilterInput { title: TitleFilter }`,
-          limit: 'Int',
-        },
-        async resolve(source, { filter }, context, info) {
-          const { title } = filter || {};
-          const { eq } = title || {};
-
-          const res = await axios.get(
-            'https://jsonplaceholder.typicode.com/posts'
-          );
-          const posts = res.data;
-
-          if (eq) {
-            return posts.filter((post) => post.title === eq);
-          }
-
-          return posts;
-        },
+  posts.forEach((post) => {
+    const node = {
+      title: post.title,
+      body: post.body,
+      id: createNodeId(`Post-${post.id}`),
+      parent: null,
+      children: [],
+      internal: {
+        type: 'Post',
+        contentDigest: createContentDigest(post),
+        content: JSON.stringify(post),
       },
-    },
-  };
-  createResolvers(resolvers);
+    };
+    actions.createNode(node);
+  });
 };
