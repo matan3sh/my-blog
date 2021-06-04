@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { createFilePath } = require('gatsby-source-filesystem');
 
 exports.createPages = async ({ actions: { createPage } }) => {
   const res = await axios.get('https://jsonplaceholder.typicode.com/posts');
@@ -41,4 +42,15 @@ exports.sourceNodes = async ({
     };
     actions.createNode(node);
   });
+};
+
+exports.onCreateNode = ({ node, getNode, actions }) => {
+  if (node.internal.type === 'MarkdownRemark') {
+    const slug = createFilePath({ node, getNode, basePath: 'blogs' });
+    actions.createNodeField({
+      node,
+      name: 'slug',
+      value: slug,
+    });
+  }
 };
