@@ -1,9 +1,31 @@
 const axios = require('axios');
 const { createFilePath } = require('gatsby-source-filesystem');
 
-exports.createPages = async ({ actions: { createPage } }) => {
+exports.createPages = async ({ graphql, actions: { createPage } }) => {
   const res = await axios.get('https://jsonplaceholder.typicode.com/posts');
   const posts = res.data;
+
+  const result = await graphql(`
+    query {
+      allMarkdownRemark {
+        nodes {
+          fields {
+            slug
+          }
+        }
+      }
+    }
+  `);
+  const { nodes } = result.data.allMarkdownRemark;
+
+  nodes.forEach((node) => {
+    createPage({
+      path: node.fields.slug,
+      component: require.resolve('./src/templates/blog.js'),
+      context: { slug: node.fields.slug },
+    });
+  });
+
   posts.forEach((post) => {
     createPage({
       path: `/posts/${post.id}`,
@@ -11,7 +33,6 @@ exports.createPages = async ({ actions: { createPage } }) => {
       context: { post },
     });
   });
-
   createPage({
     path: '/posts',
     component: require.resolve('./src/templates/posts.js'),
